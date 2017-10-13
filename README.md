@@ -12,4 +12,7 @@ For more information about the WoWAnalyzer project, please see the main repo: ht
 
 Ok here's what you do. You go to your channel permissions, add whatever bot rank you have and set *Embed links* to disallowed. That's it. Here are some screenshots of me doing this:
 
+![image](https://user-images.githubusercontent.com/4565223/31564302-a7582c82-b062-11e7-8bef-7e4261783f7e.png)
+![image](https://user-images.githubusercontent.com/4565223/31564315-ad904d1e-b062-11e7-84ba-95e28e80ab47.png)
+![image](https://user-images.githubusercontent.com/4565223/31564322-b225186e-b062-11e7-8b9e-7d9ca940a260.png)
 
