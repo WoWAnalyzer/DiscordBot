@@ -1,0 +1,29 @@
+language: node_js
+services:
+  - docker
+node_js:
+  - 8.2.1
+cache:
+  directories:
+    - node_modules
+env:
+  - NODE_ENV=production
+install:
+  - npm install
+after_success:
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      export REPO=martijnhols/discordbot;
+      export BRANCH=$(
+        if [ "$TRAVIS_BRANCH" == "master" ]; then
+          echo "latest";
+        else
+          echo $TRAVIS_BRANCH;
+        fi | sed -r 's/\//-/g'
+      );
+      echo "#docker build";
+      docker build --tag $REPO:$BRANCH --file Dockerfile .;
+      echo "#docker login";
+      docker login --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD";
+      echo "#docker push";
+      docker push $REPO:$BRANCH;
+    fi
