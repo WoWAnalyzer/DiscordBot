@@ -9,7 +9,10 @@ cache:
 env:
   - NODE_ENV=production
 install:
-  - npm install
+  - npm install --dev
+script:
+  - npm test
+  - npm prune --production
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
       export REPO=martijnhols/wowanalyzerdiscordbot;
