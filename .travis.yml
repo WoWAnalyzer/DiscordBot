@@ -12,7 +12,7 @@ install:
   - npm install
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-      export REPO=martijnhols/discordbot;
+      export REPO=martijnhols/wowanalyzerdiscordbot;
       export BRANCH=$(
         if [ "$TRAVIS_BRANCH" == "master" ]; then
           echo "latest";
