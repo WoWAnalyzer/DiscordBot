@@ -7,3 +7,9 @@ You can add the bot with this link:
 https://discordapp.com/oauth2/authorize?&client_id=368144406181838861&scope=bot&permissions=3072
 
 For more information about the WoWAnalyzer project, please see the main repo: https://github.com/WoWAnalyzer/WoWAnalyzer or join us on Discord: https://discord.gg/AxphPxU
+
+# I don't want no preview!
+
+Ok here's what you do. You go to your channel permissions, add whatever bot rank you have and set *Embed links* to disallowed. That's it. Here are some screenshots of me doing this:
+
+
