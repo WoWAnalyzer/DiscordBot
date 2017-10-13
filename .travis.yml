@@ -12,8 +12,8 @@ install:
   - npm install --dev
 script:
   - npm run test:once
-  - npm prune --production
 after_success:
+  - npm prune --production
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
       export REPO=martijnhols/wowanalyzerdiscordbot;
       export BRANCH=$(
