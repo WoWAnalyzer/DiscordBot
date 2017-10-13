@@ -3,10 +3,17 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "test": "jest --watch"
   },
   "dependencies": {
     "bufferutil": "^3.0.2",
     "discord.js": "^11.2.1"
+  },
+  "devDependencies": {
+    "babel-core": "6.25.0",
+    "babel-jest": "20.0.3",
+    "babel-preset-env": "^1.6.0",
+    "jest": "20.0.4"
   }
 }
