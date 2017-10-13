@@ -1,4 +1,4 @@
-# WoWAnalyzer Discord Bot
+# WoWAnalyzer Discord Bot [![Build Status](https://travis-ci.org/WoWAnalyzer/DiscordBot.svg?branch=master)](https://travis-ci.org/WoWAnalyzer/DiscordBot)
 
 Here resides the WoWAnalyzer Discord Bot. This bot responds to any WCL report links with a WoWAnalyzer.com link to point people in the self-analysis direction we all so much prefer over manual labour. It doesn't do anything else. The goal is to have it recognize selected fights, players and ignore logs that look like they're from smart people that don't want no pesky bots responding to them (e.g. with a filter in the link). It might not yet do those things at the time you're reading this, but this text is likely going to get outdated soon so I can't tell you for sure.
 
