@@ -14,6 +14,7 @@ client.on('message', msg => {
   }
   const content = msg.content;
   // TODO: create a group for the # part of the WCL URL
+  // TODO: Ignore URLs with pins/filters
   const match = content.trim().match(/^(.*reports\/)?([a-zA-Z0-9]{16})\/?(#.*)?(.*)?$/);
   if (match && match[2]) {
     // TODO: filter for fight=XX and source=XX for #444
