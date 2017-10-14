@@ -30,6 +30,13 @@ describe('extractUrls', () => {
       'https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L',
     ]);
   });
+  it('finds a link in a message without subdomain', () => {
+    const message = 'https://warcraftlogs.com/reports/AB1CDEf2G3HIjk4L';
+
+    expect(extractUrls(message)).toEqual([
+      'https://warcraftlogs.com/reports/AB1CDEf2G3HIjk4L',
+    ]);
+  });
   it('includes the query string', () => {
     const message = 'Could someone review this please? https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L?player=1 Thanks!';
 
