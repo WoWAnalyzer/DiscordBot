@@ -1,7 +1,8 @@
-const extractUrls = require('./extractUrls');
-const { URL } = require('url');
-const getFights = require('./getFights');
-const getFightName = require('./common/getFightName').default;
+import { URL } from 'url';
+
+import getFightName from './common/getFightName';
+import extractUrls from './extractUrls';
+import getFights from './getFights';
 
 function parseHash(hash) {
   let fightId = null;
@@ -21,7 +22,7 @@ function parseHash(hash) {
   return { fightId, playerId };
 }
 
-function onMessage(client, msg) {
+export default function onMessage(client, msg) {
   if (msg.author.bot) {
     return;
   }
@@ -80,5 +81,3 @@ function onMessage(client, msg) {
     })
   );
 }
-
-module.exports = onMessage;

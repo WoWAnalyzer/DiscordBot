@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
+import Discord from 'discord.js';
 
-const onReady = require('./onReady');
-const onMessage = require('./onMessage');
+import onReady from './onReady';
+import onMessage from './onMessage';
 
 const client = new Discord.Client();
 client.on('ready', () => onReady(client));

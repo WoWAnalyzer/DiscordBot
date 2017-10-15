@@ -1,5 +1,5 @@
-const fs = require('fs');
-const errors = require('request-promise-native/errors');
+import fs from 'fs';
+import errors from 'request-promise-native/errors';
 
 function getFights(reportCode) {
   return new Promise((resolve, reject) => {
