@@ -93,4 +93,22 @@ describe('onMessage', () => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE');
       });
   });
+  it('ignores reports with advanced filters', () => {
+    const message1 = createMessage({
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#source=75&type=healing&start=2356367&end=2381131',
+    });
+    const message2 = createMessage({
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#fight=11&source=75&start=2356367&end=2381131&view=events&pins=2%24Off%24%23244F4B%24auras-gained%24-1%240.0.0.Any%240.0.0.Any%24true%240.0.0.Any%24true%2431821%24true%24true',
+    });
+    return Promise.all([
+      onMessage(null, message1)
+        .then(() => {
+          expect(message1.channel.send).not.toHaveBeenCalled();
+        }),
+      onMessage(null, message2)
+        .then(() => {
+          expect(message2.channel.send).not.toHaveBeenCalled();
+        }),
+    ]);
+  });
 });

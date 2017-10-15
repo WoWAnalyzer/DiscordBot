@@ -4,22 +4,19 @@ import getFightName from './common/getFightName';
 import extractUrls from './extractUrls';
 import getFights from './getFights';
 
+const NUMERIC_FIELDS = ['fight', 'source', 'start', 'end'];
+
 function parseHash(hash) {
-  let fightId = null;
-  let playerId = null;
   if (hash) {
     const trimmedHash = hash.substr(1);
     const hashParts = trimmedHash.split('&');
-    hashParts.forEach(hashPart => {
+    return hashParts.reduce((obj, hashPart) => {
       const [ key, value ] = hashPart.split('=');
-      if (key === 'fight') {
-        fightId = Number(value);
-      } else if (key === 'source') {
-        playerId = Number(value);
-      }
-    });
+      obj[key] = NUMERIC_FIELDS.includes(key) ? Number(value) : value;
+      return obj;
+    }, {});
   }
-  return { fightId, playerId };
+  return {};
 }
 
 export default function onMessage(client, msg) {
@@ -46,7 +43,12 @@ export default function onMessage(client, msg) {
         return;
       }
       const reportCode = path[1];
-      const { fightId, playerId } = parseHash(url.hash);
+      const { fight: fightId, source: playerId, ...others } = parseHash(url.hash);
+
+      if (others.start || others.end || others.pins) {
+        // When the report link has more advanced filters it's probably being used for manual analysis and an auto response may not be desired.
+        return;
+      }
 
       try {
         const fightsJson = await getFights(reportCode);
