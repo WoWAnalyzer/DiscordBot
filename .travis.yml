@@ -12,9 +12,11 @@ install:
   - npm install --dev
 script:
   - npm run test:once
+  - npm run build
 after_success:
-  - npm prune --production
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      echo "The bot has already been built so we no longer need the devDependencies";
+      npm prune --production;
       export REPO=martijnhols/wowanalyzerdiscordbot;
       export BRANCH=$(
         if [ "$TRAVIS_BRANCH" == "master" ]; then
