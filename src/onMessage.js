@@ -45,7 +45,7 @@ export default function onMessage(client, msg) {
       const reportCode = path[1];
       const { fight: fightId, source: playerId, ...others } = parseHash(url.hash);
 
-      if (others.start || others.end || others.pins) {
+      if (others.start || others.end || others.pins || others.phase) {
         // When the report link has more advanced filters it's probably being used for manual analysis and an auto response may not be desired.
         return;
       }
@@ -67,8 +67,6 @@ export default function onMessage(client, msg) {
             url.push(player.name);
           }
         }
-
-        // TODO: Ignore URLs with pins/filters
 
         msg.channel.send(url.join('/'));
       }
