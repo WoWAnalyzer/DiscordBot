@@ -83,6 +83,26 @@ describe('onMessage', () => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)/Zerotorescue');
       });
   });
+  it('preselects fight when it\'s alone', () => {
+    const message = createMessage({
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#fight=11',
+    });
+
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)');
+      });
+  });
+  it('preselects fight when it\'s last', () => {
+    const message = createMessage({
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#fight=last',
+    });
+
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/42-Mythic+Fallen+Avatar+-+Wipe+14+(3:49)');
+      });
+  });
   it('ignores preselected player if fight isn\'t provided', () => {
     const message = createMessage({
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#source=75&type=healing',

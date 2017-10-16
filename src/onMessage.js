@@ -4,15 +4,13 @@ import getFightName from './common/getFightName';
 import extractUrls from './extractUrls';
 import getFights from './getFights';
 
-const NUMERIC_FIELDS = ['fight', 'source', 'start', 'end'];
-
 function parseHash(hash) {
   if (hash) {
     const trimmedHash = hash.substr(1);
     const hashParts = trimmedHash.split('&');
     return hashParts.reduce((obj, hashPart) => {
       const [ key, value ] = hashPart.split('=');
-      obj[key] = NUMERIC_FIELDS.includes(key) ? Number(value) : value;
+      obj[key] = value;
       return obj;
     }, {});
   }
@@ -59,11 +57,11 @@ export default function onMessage(client, msg) {
         ];
 
         if (fightId) {
-          const fight = report.fights.find(fight => fight.id === fightId);
+          const fight = fightId === 'last' ? report.fights[report.fights.length - 1] : report.fights.find(fight => fight.id === Number(fightId));
           const fightName = getFightName(report, fight);
           url.push(`${fight.id}-${encodeURI(fightName).replace(/%20/g, '+')}`);
           if (playerId) {
-            const player = report.friendlies.find(player => player.id === playerId);
+            const player = report.friendlies.find(player => player.id === Number(playerId));
             url.push(player.name);
           }
         }
