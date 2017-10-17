@@ -43,7 +43,7 @@ export default function onMessage(client, msg) {
       const reportCode = path[1];
       const { fight: fightId, source: playerId, ...others } = parseHash(url.hash);
 
-      if (others.start || others.end || others.pins || others.phase) {
+      if (others.start || others.end || others.pins || others.phase || others.ability) {
         // When the report link has more advanced filters it's probably being used for manual analysis and an auto response may not be desired.
         return;
       }
