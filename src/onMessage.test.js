@@ -1,6 +1,7 @@
-import onMessage from './onMessage';
+import onMessage  from './onMessage';
 
 jest.mock('./getFights');
+jest.mock('./memoryHistory');
 
 describe('onMessage', () => {
   let createMessage;
@@ -11,6 +12,10 @@ describe('onMessage', () => {
       },
       channel: {
         send: jest.fn(),
+      },
+      guild: {
+        id: 12345,
+        name: 'Unit Test Server',
       },
       ...props,
     });
@@ -51,16 +56,20 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L and https://www.warcraftlogs.com/reports/aaaaaaaaaaaaaaaa',
     });
 
-    onMessage(null, message);
-    expect(message.channel.send).not.toHaveBeenCalled();
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).not.toHaveBeenCalled();
+      });
   });
   it('requires domain', () => {
     const message = createMessage({
       content: '/reports/AB1CDEf2G3HIjk4L',
     });
 
-    onMessage(null, message);
-    expect(message.channel.send).not.toHaveBeenCalled();
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).not.toHaveBeenCalled();
+      });
   });
   it('ignores bots', () => {
     const message = createMessage({
@@ -70,8 +79,10 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L',
     });
 
-    onMessage(null, message);
-    expect(message.channel.send).not.toHaveBeenCalled();
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).not.toHaveBeenCalled();
+      });
   });
   it('preselects fight and player', () => {
     const message = createMessage({
@@ -137,5 +148,40 @@ describe('onMessage', () => {
           expect(message2.channel.send).not.toHaveBeenCalled();
         }),
     ]);
+  });
+  it('puts a report on cooldown after sending it', () => {
+    const message = createMessage({
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
+    });
+    const memoryHistory = require('./memoryHistory');
+
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).toHaveBeenCalled();
+        expect(memoryHistory.putOnCooldown).toHaveBeenCalledWith(12345, 'PROPERREPORTCODE');
+      });
+  });
+  it('ignores a report already on cooldown', () => {
+    const message = createMessage({
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
+    });
+    const memoryHistory = require('./memoryHistory');
+    memoryHistory.isOnCooldown = jest.fn(() => true);
+
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).not.toHaveBeenCalled();
+      });
+  });
+  it('triggers the history purge check', () => {
+    const message = createMessage({
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
+    });
+    const memoryHistory = require('./memoryHistory');
+
+    return onMessage(null, message)
+      .then(() => {
+        expect(memoryHistory.checkHistoryPurge).toHaveBeenCalled();
+      });
   });
 });

@@ -1,31 +1,22 @@
 import { URL } from 'url';
 
-import getFightName from './common/getFightName';
+import parseHash from './common/parseHash';
 import extractUrls from './extractUrls';
 import getFights from './getFights';
+import makeAnalyzerUrl from './makeAnalyzerUrl';
+import { isOnCooldown, putOnCooldown, checkHistoryPurge } from './memoryHistory';
 
-function parseHash(hash) {
-  if (hash) {
-    const trimmedHash = hash.substr(1);
-    const hashParts = trimmedHash.split('&');
-    return hashParts.reduce((obj, hashPart) => {
-      const [ key, value ] = hashPart.split('=');
-      obj[key] = value;
-      return obj;
-    }, {});
-  }
-  return {};
-}
+const debug = true || process.env.NODE_ENV === 'development'; // log by default for now so we can analyze where it needs improving
 
 export default function onMessage(client, msg) {
   if (msg.author.bot) {
-    return;
+    return Promise.resolve();
   }
   const urls = extractUrls(msg.content);
   if (!urls || urls.length !== 1) {
     // Ignore messages without links (for obvious reasons).
     // Ignore messages with more than 1 link. This might be revised later, but for now it seems likely that messages with multiple links may not be requests for log analysis. Ofc this is a very simplified requirement and I think it can be removed once we ignore repeated report links within a certain period of time, as that should be enough to prevent spammy, annoying responses.
-    return;
+    return Promise.resolve();
   }
 
   return Promise.all(
@@ -41,10 +32,22 @@ export default function onMessage(client, msg) {
         return;
       }
       const reportCode = path[1];
+
+      const serverId = msg.guild.id;
+      if (isOnCooldown(serverId, reportCode)) {
+        // Already responded once in this server, ignore it for now to avoid spamming while analysis is being done. This might false-positive when 2 different players want to analyze the same log.
+        debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': already seen reportCode recently.');
+        return;
+      } else {
+        putOnCooldown(serverId, reportCode);
+      }
+      checkHistoryPurge();
+
       const { fight: fightId, source: playerId, ...others } = parseHash(url.hash);
 
       if (others.start || others.end || others.pins || others.phase || others.ability || others.view) {
         // When the report link has more advanced filters it's probably being used for manual analysis and an auto response may not be desired.
+        debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': it has advanced filters.');
         return;
       }
 
@@ -52,21 +55,10 @@ export default function onMessage(client, msg) {
         const fightsJson = await getFights(reportCode);
         const report = JSON.parse(fightsJson);
 
-        const url = [
-          `https://wowanalyzer.com/report/${reportCode}`,
-        ];
+        const responseUrl = makeAnalyzerUrl(report, reportCode, fightId, playerId);
 
-        if (fightId) {
-          const fight = fightId === 'last' ? report.fights[report.fights.length - 1] : report.fights.find(fight => fight.id === Number(fightId));
-          const fightName = getFightName(report, fight);
-          url.push(`${fight.id}-${encodeURI(fightName).replace(/%20/g, '+')}`);
-          if (playerId) {
-            const player = report.friendlies.find(player => player.id === Number(playerId));
-            url.push(player.name);
-          }
-        }
-
-        msg.channel.send(url.join('/'));
+        debug && console.log('Responding to', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`);
+        msg.channel.send(responseUrl);
       }
       catch (err) {
         if ([400].includes(err.statusCode)) {
