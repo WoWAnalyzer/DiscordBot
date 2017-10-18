@@ -11,9 +11,11 @@ For more information about the WoWAnalyzer project, please see the main repo: ht
 # FAQ
 
 **It stopped responding to my links!**
-To avoid spamming during analysis, the bot only responds to a post report once per hour. (let us know if you think this should be more)
+
+To avoid spamming when a log gets passed around a lot for analysis the bot ignores repeated links for the same report. (let us know if you think this should be more) This also includes links that were never responded to, such as if they have were ignored due to being presumed used for analysis. This may happen if the report link had an ability selected, was on an other view than the default, had a time or phase selection active or had a pin. All these factors cause the report URL to be assumed used for a reason other than a request for analysis, and will be ignored to avoid the bot being annoying.
 
 **How do I limit it to specific channels?**
+
 Discord hasn't made this very easy. You should make a group for bots and add that group to every single channel while revoking (red cross) its send and read message privileges (it's important to also revoke read message). Once done, also add the WoWAnalyzer bot to the channels you want and give it explicit permission (green check) to read and send messages. Make sure it's sorted above the bot group so that it overrides the permissions.
 
 When making the bot group and blocking it from all channels you should include channels you want the bot to post in so that you can re-use the group for other bots you might want to listen to other channels. If you set it up like this adding other bots will be easy. Just assign them the general bots group and add exceptions to the channels those bots get access to.
