@@ -18,7 +18,7 @@ To avoid spamming when a log gets passed around a lot for analysis the bot ignor
 
 Discord hasn't made this very easy. You should make a group for bots and add that group to every single channel while revoking (red cross) its send and read message privileges (it's important to also revoke read message). Once done, also add the WoWAnalyzer bot to the channels you want and give it explicit permission (green check) to read and send messages. Make sure it's sorted above the bot group so that it overrides the permissions.
 
-When making the bot group and blocking it from all channels you should include channels you want the bot to post in so that you can re-use the group for other bots you might want to listen to other channels. If you set it up like this adding other bots will be easy. Just assign them the general bots group and add exceptions to the channels those bots get access to.
+When making the bot group and blocking it from all channels you should include channels you want the bot to post in so that you can re-use the group for other bots you might want to listen to other channels. If you set it up like this adding other bots will be easy; Just assign them the bots group and add new exceptions to the channels those bots get access to.
 
 **How do I disable the preview?**
 
