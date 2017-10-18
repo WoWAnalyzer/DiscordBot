@@ -8,7 +8,17 @@ https://discordapp.com/oauth2/authorize?&client_id=368144406181838861&scope=bot&
 
 For more information about the WoWAnalyzer project, please see the main repo: https://github.com/WoWAnalyzer/WoWAnalyzer or join us on Discord: https://discord.gg/AxphPxU
 
-# I don't want no preview!
+# FAQ
+
+**It stopped responding to my links!**
+To avoid spamming during analysis, the bot only responds to a post report once per hour. (let us know if you think this should be more)
+
+**How do I limit it to specific channels?**
+Discord hasn't made this very easy. You should make a group for bots and add that group to every single channel while revoking (red cross) its send and read message privileges (it's important to also revoke read message). Once done, also add the WoWAnalyzer bot to the channels you want and give it explicit permission (green check) to read and send messages. Make sure it's sorted above the bot group so that it overrides the permissions.
+
+When making the bot group and blocking it from all channels you should include channels you want the bot to post in so that you can re-use the group for other bots you might want to listen to other channels. If you set it up like this adding other bots will be easy. Just assign them the general bots group and add exceptions to the channels those bots get access to.
+
+**How do I disable the preview?**
 
 Ok here's what you do. You go to your channel permissions, add whatever bot rank you have and set *Embed links* to disallowed. That's it. Here are some screenshots of me doing this:
 
