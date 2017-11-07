@@ -2,6 +2,8 @@
 
 Here resides the WoWAnalyzer Discord Bot (source). This bot responds to WCL report links with a WoWAnalyzer.com link to get users to analyze themselves without lifting a finger (even if they don't read the pins). It doesn't do anything else. If a fight or player has been selected, it will provide a link straight to the results. It tries to ignore links that are unlikely to be for log reviewing, such as if they have filters, pins or are on other pages such as the timeline or rankings view. It also ignores the same report for 1 hour to allow you to theorycraft in peace.
 
+![Discord bot gif](https://user-images.githubusercontent.com/4565223/31851455-5f49f39e-b666-11e7-8c91-a0b52b66c852.gif)
+
 You can add the bot with this link:
 
 https://discordapp.com/oauth2/authorize?&client_id=368144406181838861&scope=bot&permissions=3072
