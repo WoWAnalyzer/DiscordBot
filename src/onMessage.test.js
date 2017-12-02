@@ -26,6 +26,7 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE');
@@ -36,6 +37,7 @@ describe('onMessage', () => {
       content: 'Please review: https://www.warcraftlogs.com/reports/PROPERREPORTCODE. Thanks!',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE');
@@ -46,6 +48,7 @@ describe('onMessage', () => {
       content: 'Please review: https://www.warcraftlogs.com/reports/AWRONGREPORTCODE. Thanks!',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
@@ -56,6 +59,7 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L and https://www.warcraftlogs.com/reports/aaaaaaaaaaaaaaaa',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
@@ -66,6 +70,7 @@ describe('onMessage', () => {
       content: '/reports/AB1CDEf2G3HIjk4L',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
@@ -79,6 +84,7 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
@@ -89,6 +95,7 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#fight=11&source=75&type=healing',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)/Zerotorescue');
@@ -99,6 +106,7 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#fight=11',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)');
@@ -109,6 +117,7 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#fight=last',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/42-Mythic+Fallen+Avatar+-+Wipe+14+(3:49)');
@@ -119,6 +128,7 @@ describe('onMessage', () => {
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#source=75&type=healing',
     });
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE');
@@ -134,6 +144,7 @@ describe('onMessage', () => {
     const message3 = createMessage({
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE/#source=75&fight=last&type=healing&phase=1',
     });
+    expect.assertions(3);
     return Promise.all([
       onMessage(null, message1)
         .then(() => {
@@ -155,6 +166,7 @@ describe('onMessage', () => {
     });
     const memoryHistory = require('./memoryHistory');
 
+    expect.assertions(2);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalled();
@@ -168,6 +180,7 @@ describe('onMessage', () => {
     const memoryHistory = require('./memoryHistory');
     memoryHistory.isOnCooldown = jest.fn(() => true);
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
@@ -179,9 +192,21 @@ describe('onMessage', () => {
     });
     const memoryHistory = require('./memoryHistory');
 
+    expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
         expect(memoryHistory.checkHistoryPurge).toHaveBeenCalled();
+      });
+  });
+  it('handles emojis gracefully (does not trigger an unhandled promise rejection)', () => {
+    const message = createMessage({
+      content: 'pepe_oops:346683709187031041',
+    });
+
+    expect.assertions(1);
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).not.toHaveBeenCalled();
       });
   });
 });

@@ -21,7 +21,12 @@ export default function onMessage(client, msg) {
 
   return Promise.all(
     urls.map(async urlString => {
-      const url = new URL(urlString);
+      let url;
+      try {
+        url = new URL(urlString);
+      } catch(error) {
+        return;
+      }
       if (!url.host.match(/warcraftlogs\.com$/)) {
         // The URL must be from the WCL domain.
         return;
