@@ -1,4 +1,5 @@
 import { URL } from 'url';
+import Raven from 'raven';
 
 import parseHash from './common/parseHash';
 import extractUrls from './extractUrls';
@@ -62,13 +63,15 @@ export default function onMessage(client, msg) {
         debug && console.log('Responding to', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`);
         msg.channel.send(responseUrl);
       }
-      catch (err) {
-        if ([400].includes(err.statusCode)) {
+      catch (error) {
+        if ([400].includes(error.statusCode)) {
           // Known status codes, so no need to log.
           // 400 = report does not exist or is private.
+          console.log('400 response: report does not exist or is private.');
           return;
         }
-        console.error(err);
+        Raven.captureException(error);
+        console.error(error);
       }
     })
   );
