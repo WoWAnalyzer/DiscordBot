@@ -10,7 +10,9 @@ export default function main(token) {
     return false;
   }
 
-  console.log('Token:', token);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Token:', token);
+  }
 
   const client = new Discord.Client();
   client.on('ready', () => onReady(client));

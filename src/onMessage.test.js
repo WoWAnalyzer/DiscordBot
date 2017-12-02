@@ -76,18 +76,18 @@ describe('onMessage', () => {
         expect(message.channel.send).not.toHaveBeenCalled();
       });
   });
-  it('ignores bots', () => {
+  it('responds to bots (like the WCL webhook)', () => {
     const message = createMessage({
       author: {
         bot: true,
       },
-      content: 'https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L',
+      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
     });
 
     expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
-        expect(message.channel.send).not.toHaveBeenCalled();
+        expect(message.channel.send).toHaveBeenCalled();
       });
   });
   it('preselects fight and player', () => {

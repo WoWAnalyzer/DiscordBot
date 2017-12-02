@@ -9,9 +9,6 @@ import { isOnCooldown, putOnCooldown, checkHistoryPurge } from './memoryHistory'
 const debug = true || process.env.NODE_ENV === 'development'; // log by default for now so we can analyze where it needs improving
 
 export default function onMessage(client, msg) {
-  if (msg.author.bot) {
-    return Promise.resolve();
-  }
   const urls = extractUrls(msg.content);
   if (!urls || urls.length !== 1) {
     // Ignore messages without links (for obvious reasons).
