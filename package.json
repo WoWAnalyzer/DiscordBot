@@ -9,9 +9,10 @@
     "prod": "node --harmony build/index.js"
   },
   "dependencies": {
-    "bufferutil": "^3.0.2",
     "babel-runtime": "^6.26.0",
+    "bufferutil": "^3.0.2",
     "discord.js": "^11.2.1",
+    "raven": "^2.2.1",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4"
   },
