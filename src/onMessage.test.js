@@ -1,4 +1,5 @@
 import onMessage  from './onMessage';
+import { putOnCooldown, checkHistoryPurge } from './memoryHistory';
 
 jest.mock('./getFights');
 jest.mock('./memoryHistory');
@@ -17,6 +18,8 @@ describe('onMessage', () => {
         id: 12345,
         name: 'Unit Test Server',
       },
+      content: '',
+      embeds: [],
       ...props,
     });
   });
@@ -164,38 +167,43 @@ describe('onMessage', () => {
     const message = createMessage({
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
     });
-    const memoryHistory = require('./memoryHistory');
 
     expect.assertions(2);
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalled();
-        expect(memoryHistory.putOnCooldown).toHaveBeenCalledWith(12345, 'PROPERREPORTCODE');
+        expect(putOnCooldown).toHaveBeenCalledWith(12345, 'PROPERREPORTCODE');
       });
   });
-  it('ignores a report already on cooldown', () => {
-    const message = createMessage({
-      content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
-    });
+  describe('Scoped / Nested block', () => {
     const memoryHistory = require('./memoryHistory');
-    memoryHistory.isOnCooldown = jest.fn(() => true);
-
-    expect.assertions(1);
-    return onMessage(null, message)
-      .then(() => {
-        expect(message.channel.send).not.toHaveBeenCalled();
+    beforeEach(() => {
+      memoryHistory.isOnCooldown = jest.fn(() => true);
+    });
+    afterEach(() => {
+      memoryHistory.isOnCooldown = jest.fn();
+    });
+    it('ignores a report already on cooldown', () => {
+      const message = createMessage({
+        content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
       });
+
+      expect.assertions(1);
+      return onMessage(null, message)
+        .then(() => {
+          expect(message.channel.send).not.toHaveBeenCalled();
+        });
+    });
   });
   it('triggers the history purge check', () => {
     const message = createMessage({
       content: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
     });
-    const memoryHistory = require('./memoryHistory');
 
     expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
-        expect(memoryHistory.checkHistoryPurge).toHaveBeenCalled();
+        expect(checkHistoryPurge).toHaveBeenCalled();
       });
   });
   it('handles emojis gracefully (does not trigger an unhandled promise rejection)', () => {
@@ -207,6 +215,21 @@ describe('onMessage', () => {
     return onMessage(null, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
+      });
+  });
+  it('also responds to urls in embeds', () => {
+    const message = createMessage({
+      embeds: [
+        {
+          url: 'https://www.warcraftlogs.com/reports/PROPERREPORTCODE',
+        },
+      ],
+    });
+
+    expect.assertions(1);
+    return onMessage(null, message)
+      .then(() => {
+        expect(message.channel.send).toHaveBeenCalled();
       });
   });
 });

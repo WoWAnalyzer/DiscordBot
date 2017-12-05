@@ -65,4 +65,9 @@ describe('extractUrls', () => {
       'https://www.warcraftlogs.com/reports/AB1CDEf2G3HIjk4L?player=1#fight=1',
     ]);
   });
+  it('returns an empty array when not finding a result', () => {
+    const message = 'Please review my log.';
+
+    expect(extractUrls(message)).toEqual([]);
+  });
 });

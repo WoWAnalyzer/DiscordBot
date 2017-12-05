@@ -9,8 +9,21 @@ import { isOnCooldown, putOnCooldown, checkHistoryPurge } from './memoryHistory'
 
 const debug = true || process.env.NODE_ENV === 'development'; // log by default for now so we can analyze where it needs improving
 
+function getUrlsFromMessage(msg) {
+  let urls = extractUrls(msg.content);
+  // WebHooks may send embeds that we also want to respond to
+  msg.embeds.forEach(embed => {
+    if (embed.url) {
+      // Sanity check that the URL is actually an URL
+      urls = [...urls, ...extractUrls(embed.url)];
+    }
+  });
+  return urls;
+}
+
 export default function onMessage(client, msg) {
-  const urls = extractUrls(msg.content);
+  const urls = getUrlsFromMessage(msg);
+
   if (!urls || urls.length !== 1) {
     // Ignore messages without links (for obvious reasons).
     // Ignore messages with more than 1 link. This might be revised later, but for now it seems likely that messages with multiple links may not be requests for log analysis. Ofc this is a very simplified requirement and I think it can be removed once we ignore repeated report links within a certain period of time, as that should be enough to prevent spammy, annoying responses.

@@ -6,7 +6,7 @@ import onMessage from './onMessage';
 
 export default function main(token) {
   if (!token) {
-    console.error('No API token provided. Get a token for a test bot to test this here: https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token');
+    console.error('No API token provided in DISCORD_TOKEN. Get a token for a test bot to test this here: https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token');
     return false;
   }
 
