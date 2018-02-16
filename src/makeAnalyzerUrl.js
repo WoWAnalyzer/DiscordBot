@@ -13,7 +13,7 @@ export default function makeAnalyzerUrl(report, reportCode, fightId = null, play
       url.push(`${fight.id}-${encodeURI(fightName).replace(/%20/g, '+')}`);
       if (playerId) {
         const player = report.friendlies.find(player => player.id === Number(playerId));
-        url.push(player.name);
+        url.push(`${playerId}-${player.name}`);
       }
     }
   }
