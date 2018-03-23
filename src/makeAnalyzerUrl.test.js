@@ -21,13 +21,13 @@ describe('makeAnalyzerUrl', () => {
     expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', 'last')).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE/42-Mythic+Fallen+Avatar+-+Wipe+14+(3:49)');
   });
   it('returns the right player', () => {
-    expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', 1, 1)).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE/1-Mythic+Goroth+-+Kill+(3:01)/Zerosatroll');
-    expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', 1, 75)).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE/1-Mythic+Goroth+-+Kill+(3:01)/Zerotorescue');
+    expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', 1, 1)).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE/1-Mythic+Goroth+-+Kill+(3:01)/1-Zerosatroll');
+    expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', 1, 75)).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE/1-Mythic+Goroth+-+Kill+(3:01)/75-Zerotorescue');
   });
   it('does not return a player when no fight was selected', () => {
     expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', null, 1)).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE');
   });
   it('allows playerId to be a string', () => {
-    expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', 1, '75')).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE/1-Mythic+Goroth+-+Kill+(3:01)/Zerotorescue');
+    expect(makeAnalyzerUrl(report, 'PROPERREPORTCODE', 1, '75')).toBe('https://wowanalyzer.com/report/PROPERREPORTCODE/1-Mythic+Goroth+-+Kill+(3:01)/75-Zerotorescue');
   });
 });

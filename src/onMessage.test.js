@@ -101,7 +101,7 @@ describe('onMessage', () => {
     expect.assertions(1);
     return onMessage(null, message)
       .then(() => {
-        expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)/Zerotorescue');
+        expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)/75-Zerotorescue');
       });
   });
   it('preselects fight when it\'s alone', () => {
