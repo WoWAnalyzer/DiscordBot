@@ -17,6 +17,7 @@ export default function main(token) {
   const client = new Discord.Client();
   client.on('ready', () => onReady(client));
   client.on('message', msg => onMessage(client, msg));
+  client.on('error', console.error);
   client.login(token);
   return true;
 }
