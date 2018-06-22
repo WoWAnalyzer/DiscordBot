@@ -74,7 +74,11 @@ export default function onMessage(client, msg) {
         const responseUrl = makeAnalyzerUrl(report, reportCode, fightId, playerId);
 
         debug && console.log('Responding to', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`);
-        msg.channel.send(responseUrl);
+        if (!msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
+          console.warn('No permission to write to this channel.');
+        } else {
+          msg.channel.send(responseUrl);
+        }
       }
       catch (error) {
         if ([400].includes(error.statusCode)) {
