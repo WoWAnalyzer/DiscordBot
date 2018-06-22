@@ -13,6 +13,9 @@ describe('onMessage', () => {
       },
       channel: {
         send: jest.fn(),
+        permissionsFor: jest.fn(() => ({
+          has: jest.fn(() => true),
+        })),
       },
       guild: {
         id: 12345,
@@ -30,7 +33,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE');
       });
@@ -41,7 +44,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE');
       });
@@ -52,7 +55,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
       });
@@ -63,7 +66,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
       });
@@ -74,7 +77,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
       });
@@ -88,7 +91,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalled();
       });
@@ -99,7 +102,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)/75-Zerotorescue');
       });
@@ -110,7 +113,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/11-Mythic+Sisters+of+the+Moon+-+Kill+(5:16)');
       });
@@ -121,7 +124,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE/42-Mythic+Fallen+Avatar+-+Wipe+14+(3:49)');
       });
@@ -132,7 +135,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalledWith('https://wowanalyzer.com/report/PROPERREPORTCODE');
       });
@@ -149,15 +152,15 @@ describe('onMessage', () => {
     });
     expect.assertions(3);
     return Promise.all([
-      onMessage(null, message1)
+      onMessage({}, message1)
         .then(() => {
           expect(message1.channel.send).not.toHaveBeenCalled();
         }),
-      onMessage(null, message2)
+      onMessage({}, message2)
         .then(() => {
           expect(message2.channel.send).not.toHaveBeenCalled();
         }),
-      onMessage(null, message3)
+      onMessage({}, message3)
         .then(() => {
           expect(message2.channel.send).not.toHaveBeenCalled();
         }),
@@ -169,7 +172,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(2);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalled();
         expect(putOnCooldown).toHaveBeenCalledWith(12345, 'PROPERREPORTCODE');
@@ -189,7 +192,7 @@ describe('onMessage', () => {
       });
 
       expect.assertions(1);
-      return onMessage(null, message)
+      return onMessage({}, message)
         .then(() => {
           expect(message.channel.send).not.toHaveBeenCalled();
         });
@@ -201,7 +204,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(checkHistoryPurge).toHaveBeenCalled();
       });
@@ -212,7 +215,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).not.toHaveBeenCalled();
       });
@@ -227,7 +230,7 @@ describe('onMessage', () => {
     });
 
     expect.assertions(1);
-    return onMessage(null, message)
+    return onMessage({}, message)
       .then(() => {
         expect(message.channel.send).toHaveBeenCalled();
       });
