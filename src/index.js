@@ -1,6 +1,13 @@
+import fs from 'fs';
 import Raven from 'raven';
 
 import main from './main';
+import loadDotEnv from './env';
+
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+const appDirectory = fs.realpathSync(process.cwd());
+
+loadDotEnv(appDirectory);
 
 if (process.env.NODE_ENV === 'production') {
   console.log('Sentry is ENABLED');
