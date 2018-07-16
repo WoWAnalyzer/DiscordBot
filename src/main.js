@@ -17,7 +17,11 @@ export default function main(token) {
   const client = new Discord.Client();
   client.on('ready', () => onReady(client));
   client.on('message', msg => onMessage(client, msg));
-  client.on('error', console.error);
+  // Not sure if I can pass console.error directly, better safe than sorry.
+  client.on('error', e => console.error(e));
+  client.on('warn', e => console.warn(e));
+  // discord.js sometimes randomly stops responding to messages. It might get stuck in a loop. Log *everything* until we can get this fixed.
+  client.on('debug', e => console.info(e));
   client.login(token);
   return true;
 }
