@@ -22,6 +22,7 @@ function getUrlsFromMessage(msg) {
 }
 
 export default function onMessage(client, msg) {
+  console.log('[message]', msg.content, msg.embeds ? msg.embeds.length : 0);
   const urls = getUrlsFromMessage(msg);
 
   if (!urls || urls.length !== 1) {
