@@ -22,7 +22,12 @@ function getUrlsFromMessage(msg) {
 }
 
 export default function onMessage(client, msg) {
-  console.log('[message]', msg.content, msg.embeds ? msg.embeds.length : 0);
+  const isServer = msg.guild !== null;
+  const isPrivateMessage = msg.channel === null;
+  const channelName = isServer ? `${msg.guild.name} (#${msg.channel.name})` : 'PM';
+  const authorName = msg.author.username;
+
+  console.log('[message]', channelName, authorName, msg.content, msg.embeds ? msg.embeds.length : 0);
   const urls = getUrlsFromMessage(msg);
 
   if (!urls || urls.length !== 1) {
@@ -50,21 +55,23 @@ export default function onMessage(client, msg) {
       }
       const reportCode = path[1];
 
-      const serverId = msg.guild.id;
-      if (isOnCooldown(serverId, reportCode)) {
-        // Already responded once in this server, ignore it for now to avoid spamming while analysis is being done. This might false-positive when 2 different players want to analyze the same log.
-        debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': already seen reportCode recently.');
-        return;
-      } else {
-        putOnCooldown(serverId, reportCode);
+      if (isServer && !isPrivateMessage) {
+        const serverId = msg.guild.id;
+        if (isOnCooldown(serverId, reportCode)) {
+          // Already responded once in this server, ignore it for now to avoid spamming while analysis is being done. This might false-positive when 2 different players want to analyze the same log.
+          debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': already seen reportCode recently.');
+          return;
+        } else {
+          putOnCooldown(serverId, reportCode);
+        }
+        checkHistoryPurge();
       }
-      checkHistoryPurge();
 
       const { fight: fightId, source: playerId, ...others } = parseHash(url.hash);
 
-      if (others.start || others.end || others.pins || others.phase || others.ability || others.view) {
+      if (isServer && (others.start || others.end || others.pins || others.phase || others.ability || others.view)) {
         // When the report link has more advanced filters it's probably being used for manual analysis and an auto response may not be desired.
-        debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': it has advanced filters.');
+        debug && console.log('Ignoring', url.href, 'in', channelName, ': it has advanced filters.');
         return;
       }
 
@@ -74,8 +81,8 @@ export default function onMessage(client, msg) {
 
         const responseUrl = makeAnalyzerUrl(report, reportCode, fightId, playerId);
 
-        debug && console.log('Responding to', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`);
-        if (msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
+        debug && console.log('Responding to', url.href, 'in', channelName);
+        if (!isServer || msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
           msg.channel.send(responseUrl);
         } else {
           console.warn('No permission to write to this channel.');
