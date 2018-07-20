@@ -19,9 +19,20 @@ export default function main(token) {
   client.on('message', msg => onMessage(client, msg));
   // Not sure if I can pass console.error directly, better safe than sorry.
   client.on('error', e => console.error(e));
+  client.on('uncaughtException', e => console.error(e));
+  client.on('rejectionHandled', e => console.error(e));
   client.on('warn', e => console.warn(e));
   // discord.js sometimes randomly stops responding to messages. It might get stuck in a loop. Log *everything* until we can get this fixed.
   client.on('debug', e => console.info(e));
+  client.on('disconnect', e => console.warn('disconnect', e));
+  client.on('reconnecting', e => console.warn('reconnecting', e));
+  client.on('commandError', e => console.error('commandError', e));
+  client.on('guildCreate', async guild => {
+    /* Bot joins a new server */
+    let count = await client.shard.broadcastEval('this.guilds.size');
+    count = count.reduce((prev, val) => prev + val, 0);
+    console.log('Joined server', guild.name, count);
+  });
   client.login(token);
   return true;
 }
