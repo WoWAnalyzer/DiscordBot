@@ -29,9 +29,7 @@ export default function main(token) {
   client.on('commandError', e => console.error('commandError', e));
   client.on('guildCreate', async guild => {
     /* Bot joins a new server */
-    let count = await client.shard.broadcastEval('this.guilds.size');
-    count = count.reduce((prev, val) => prev + val, 0);
-    console.log('Joined server', guild.name, count);
+    console.log('Joined server', guild.name, client.guilds.size);
   });
   client.login(token);
   return true;
