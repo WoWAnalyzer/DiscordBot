@@ -15,7 +15,7 @@
     "raven": "^2.6.3",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.4",
-    "uws": "^10.148.1"
+    "uws": "10.148.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
