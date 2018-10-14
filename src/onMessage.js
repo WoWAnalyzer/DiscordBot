@@ -25,9 +25,7 @@ export default function onMessage(client, msg) {
   const isServer = msg.guild !== null;
   const isPrivateMessage = msg.channel === null;
   const channelName = isServer ? `${msg.guild.name} (#${msg.channel.name})` : 'PM';
-  const authorName = msg.author.username;
 
-  console.log('[message]', channelName, authorName, msg.content, msg.embeds ? msg.embeds.length : 0);
   const urls = getUrlsFromMessage(msg);
 
   if (!urls || urls.length !== 1) {
