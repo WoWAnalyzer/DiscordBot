@@ -23,7 +23,7 @@ export default function main(token) {
   client.on('rejectionHandled', e => console.error(e));
   client.on('warn', e => console.warn(e));
   // discord.js sometimes randomly stops responding to messages. It might get stuck in a loop. Log *everything* until we can get this fixed.
-  client.on('debug', e => console.info(e));
+  // client.on('debug', e => console.info(e));
   client.on('disconnect', e => console.warn('disconnect', e));
   client.on('reconnecting', e => console.warn('reconnecting', e));
   client.on('commandError', e => console.error('commandError', e));
