@@ -1,12 +1,12 @@
 // noinspection JSFileReferences
 import Discord from 'discord.js';
 
-import main from './main';
+import bot from './bot';
 
 describe('main', () => {
   it('errors when missing a token', () => {
     console.error = jest.fn();
-    expect(main()).toBe(false);
+    expect(bot()).toBe(false);
     // It should let us know what happened
     expect(console.error).toHaveBeenCalled();
   });
@@ -16,7 +16,7 @@ describe('main', () => {
       on: jest.fn(),
       login,
     }));
-    main('test-token');
+    bot('test-token');
     expect(Discord.Client).toHaveBeenCalled();
     expect(login).toHaveBeenCalledWith('test-token');
   });

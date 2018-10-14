@@ -1,8 +1,9 @@
 import fs from 'fs';
 import Raven from 'raven';
 
-import main from './main';
+import bot from './bot';
 import loadDotEnv from './env';
+import * as metrics from './metrics';
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const appDirectory = fs.realpathSync(process.cwd());
@@ -17,4 +18,5 @@ if (process.env.NODE_ENV === 'production') {
   }).install();
 }
 
-main(process.env.DISCORD_TOKEN);
+bot(process.env.DISCORD_TOKEN);
+metrics.createServer();

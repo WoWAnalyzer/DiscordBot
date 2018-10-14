@@ -3,8 +3,9 @@ import Discord from 'discord.js';
 
 import onReady from './onReady';
 import onMessage from './onMessage';
+import * as metrics from './metrics';
 
-export default function main(token) {
+export default function bot(token) {
   if (!token) {
     console.error('No API token provided in DISCORD_TOKEN. Get a token for a test bot to test this here: https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token');
     return false;
@@ -28,8 +29,12 @@ export default function main(token) {
   client.on('reconnecting', e => console.warn('reconnecting', e));
   client.on('commandError', e => console.error('commandError', e));
   client.on('guildCreate', async guild => {
-    /* Bot joins a new server */
     console.log('Joined server', guild.name, client.guilds.size);
+    metrics.guildGauge.set(client.guilds.size);
+  });
+  client.on('guildDelete', async guild => {
+    console.log('Left server', guild.name, client.guilds.size);
+    metrics.guildGauge.set(client.guilds.size);
   });
   client.login(token);
   return true;
