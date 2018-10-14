@@ -31,6 +31,10 @@ export default function bot(token) {
   client.on('guildCreate', async guild => {
     console.log('Joined server', guild.name, client.guilds.size);
     metrics.guildGauge.set(client.guilds.size);
+
+    // Set up the counter so that the first response for new servers is counted
+    // see https://github.com/prometheus/prometheus/issues/3886 or https://github.com/prometheus/prometheus/issues/1673
+    metrics.messagesSentCounter.labels(guild.name).inc(0);
   });
   client.on('guildDelete', async guild => {
     console.log('Left server', guild.name, client.guilds.size);
