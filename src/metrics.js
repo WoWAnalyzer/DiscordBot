@@ -10,12 +10,17 @@ export const guildGauge = new Prometheus.Gauge({
   help: 'The amount of guilds the bot is in',
 });
 
-export const register = Prometheus.register;
+export const messagesSentCounter = new Prometheus.Counter({
+  name: 'bot_messages_sent',
+  help: 'The amount of messages the bot has sent',
+  labelNames: ['server'],
+});
 
 export function createServer() {
   const port = process.env.METRICS_PORT || 3000;
   http.createServer((req, res) => {
     if (req.url === '/metrics') {
+      const register = Prometheus.register;
       res.setHeader('Connection', 'close');
       res.setHeader('Content-Type', register.contentType);
       res.write(register.metrics());

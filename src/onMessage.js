@@ -6,6 +6,7 @@ import extractUrls from './extractUrls';
 import getFights from './getFights';
 import makeAnalyzerUrl from './makeAnalyzerUrl';
 import { isOnCooldown, putOnCooldown, checkHistoryPurge } from './memoryHistory';
+import * as metrics from './metrics';
 
 const debug = true || process.env.NODE_ENV === 'development'; // log by default for now so we can analyze where it needs improving
 
@@ -24,7 +25,8 @@ function getUrlsFromMessage(msg) {
 export default function onMessage(client, msg) {
   const isServer = msg.guild !== null;
   const isPrivateMessage = msg.channel === null;
-  const channelName = isServer ? `${msg.guild.name} (#${msg.channel.name})` : 'PM';
+  const serverName = isServer ? msg.guild.name : 'PM';
+  const channelName = isServer ? `${serverName} (#${msg.channel.name})` : 'PM';
 
   const urls = getUrlsFromMessage(msg);
 
@@ -82,6 +84,7 @@ export default function onMessage(client, msg) {
         debug && console.log('Responding to', url.href, 'in', channelName);
         if (!isServer || msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
           msg.channel.send(responseUrl);
+          metrics.messagesSentCounter.labels(serverName).inc();
         } else {
           console.warn('No permission to write to this channel.');
         }
