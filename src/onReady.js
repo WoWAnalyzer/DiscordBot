@@ -6,4 +6,6 @@ export default function onReady(client) {
   console.log('Currently in', client.guilds.size, 'servers');
 
   metrics.guildGauge.set(client.guilds.size);
+
+  metrics.createServer();
 }

@@ -19,4 +19,3 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 bot(process.env.DISCORD_TOKEN);
-metrics.createServer();
