@@ -23,6 +23,7 @@ function getUrlsFromMessage(msg) {
 }
 
 export default function onMessage(client, msg) {
+  const start = process.hrtime();
   const isServer = msg.guild !== null;
   const isPrivateMessage = msg.channel === null;
   const serverName = isServer ? msg.guild.name : 'PM';
@@ -84,7 +85,11 @@ export default function onMessage(client, msg) {
         debug && console.log('Responding to', url.href, 'in', channelName);
         if (!isServer || msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
           msg.channel.send(responseUrl);
+
+          // Metrics
           metrics.messagesSentCounter.labels(serverName).inc();
+          const elapsedMs = process.hrtime(start)[1] / 1000000;
+          metrics.reportResponseLatencyHistogram.observe(elapsedMs);
         } else {
           console.warn('No permission to write to this channel.');
         }

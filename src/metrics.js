@@ -16,6 +16,12 @@ export const messagesSentCounter = new Prometheus.Counter({
   labelNames: ['server'],
 });
 
+export const reportResponseLatencyHistogram = new Prometheus.Histogram({
+  name: 'bot_report_response_latency',
+  help: 'The time it took to respond to a report',
+  buckets: [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000],
+});
+
 export function createServer() {
   const port = process.env.METRICS_PORT || 3000;
   http.createServer((req, res) => {
