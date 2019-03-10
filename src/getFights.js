@@ -2,7 +2,7 @@ import request from 'request-promise-native';
 
 async function getFights(reportCode) {
   const jsonString = await request.get({
-    url: `https://wowanalyzer.com/api/v1/report/fights/${reportCode}?translate=true`,
+    url: `https://wowanalyzer.com/i/v1/report/fights/${reportCode}?translate=true`,
     headers: {
       'User-Agent': 'WoWAnalyzer.com DiscordBot',
     },
