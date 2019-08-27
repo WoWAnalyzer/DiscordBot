@@ -55,9 +55,9 @@ export default function onMessage(client, msg) {
         return;
       }
       const reportCode = path[1];
+      const serverId = msg.guild.id;
 
       if (isServer && !isPrivateMessage) {
-        const serverId = msg.guild.id;
         if (isOnCooldown(serverId, reportCode)) {
           // Already responded once in this server, ignore it for now to avoid spamming while analysis is being done. This might false-positive when 2 different players want to analyze the same log.
           debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': already seen reportCode recently.');
