@@ -62,8 +62,6 @@ export default function onMessage(client, msg) {
           // Already responded once in this server, ignore it for now to avoid spamming while analysis is being done. This might false-positive when 2 different players want to analyze the same log.
           debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': already seen reportCode recently.');
           return;
-        } else {
-          putOnCooldown(serverId, reportCode);
         }
         checkHistoryPurge();
       }
@@ -85,13 +83,14 @@ export default function onMessage(client, msg) {
         debug && console.log('Responding to', url.href, 'in', channelName);
         if (!isServer || msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
           msg.channel.send(responseUrl);
+          putOnCooldown(serverId, reportCode);
 
           // Metrics
           metrics.messagesSentCounter.labels(serverName).inc();
           const elapsedMs = process.hrtime(start)[1] / 1000000;
           metrics.reportResponseLatencyHistogram.observe(elapsedMs);
         } else {
-          console.warn('No permission to write to this channel.');
+          console.warn('No permission to write to this channel.', channelName);
         }
       }
       catch (error) {
