@@ -23,6 +23,7 @@ function getUrlsFromMessage(msg) {
 }
 
 function getReportCode(wowaUrl) {
+  // url is in format https://wowanalyzer.com/report/<reportcode>
   const split = wowaUrl.split("/");
   return split[split.length - 1];
 }
@@ -31,7 +32,7 @@ function createMessage(analysisUrls) {
   let s = ``;
   let numAdded = 1;
   for (const url of analysisUrls) {
-    if (url === undefined)
+    if (url === undefined) // happens when the url is not a wcl report url
       continue;
     if (numAdded > 0) {
       s += `\n`;
@@ -58,6 +59,7 @@ export default function onMessage(client, msg) {
     // Ignore messages with more than 1 link. This might be revised later, but for now it seems likely that messages with multiple links may not be requests for log analysis. Ofc this is a very simplified requirement and I think it can be removed once we ignore repeated report links within a certain period of time, as that should be enough to prevent spammy, annoying responses.
     return Promise.resolve();
   }
+
   return Promise.all(urls.map(async urlString => {
     let url;
     try {
@@ -81,7 +83,7 @@ export default function onMessage(client, msg) {
     if (isServer && !isPrivateMessage) {
       if (isOnCooldown(serverId, reportCode)) {
         // Already responded once in this server, ignore it for now to avoid spamming while analysis is being done. This might false-positive when 2 different players want to analyze the same log.
-        console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': already seen reportCode recently.');
+        debug && console.log('Ignoring', url.href, 'in', msg.guild.name, `(#${msg.channel.name})`, ': already seen reportCode recently.');
         return;
       }
       checkHistoryPurge();
@@ -90,25 +92,22 @@ export default function onMessage(client, msg) {
 
     if (isServer && (others.start || others.end || others.pins || others.phase || others.ability || others.view)) {
       // When the report link has more advanced filters it's probably being used for manual analysis and an auto response may not be desired.
-      console.log('Ignoring', url.href, 'in', channelName, ': it has advanced filters.');
+      debug && console.log('Ignoring', url.href, 'in', channelName, ': it has advanced filters.');
       return;
     }
+  
     const fightsJson = await getFights(reportCode);
     const report = JSON.parse(fightsJson);
 
-    const responseUrl = makeAnalyzerUrl(report, reportCode, fightId, playerId);
-    console.log("url is " + responseUrl);
-    return responseUrl
+    return makeAnalyzerUrl(report, reportCode, fightId, playerId);
   })).then((values) => {
     try {
       if (!isServer || msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
         const messageToSend = createMessage(values);
-        console.log(messageToSend);
         msg.channel.send(messageToSend);
-        
+
         values.map((url) => {
           if (url != undefined) {
-            console.log("url in map is " + url);
             let reportCode = getReportCode(url);
             putOnCooldown(msg.guild.id, reportCode);
           }
@@ -126,7 +125,7 @@ export default function onMessage(client, msg) {
       if ([400].includes(error.statusCode)) {
         // Known status codes, so no need to log.
         // 400 = report does not exist or is private.
-        console.log('400 response: report does not exist or is private.');
+        debug && console.log('400 response: report does not exist or is private.');
         return;
       }
       Raven.captureException(error);
