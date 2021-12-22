@@ -10,4 +10,5 @@ I assume you're familiar with the main project setup.
 2. `npm start`
 3. notice it complain about token
 4. Do this: https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token (name it something like "WoWAnalyzer DEV")
-5. Copy .env.example into file named .env and add your Discord application token or re-run with `DISCORD_TOKEN=YoURAmaZINgLyLong-ToKEN npm start` (linux), `set DISCORD_TOKEN=YoURAmaZINgLyLong-ToKEN&& npm start` (cmd), or `$env:DISCORD_TOKEN="YoURAmaZINgLyLong-ToKEN"; npm start` (Powershell)
+5. Copy .env.example into file named .env and add your Discord application token & run `sudo yarn start`.
+Alternatively, re-run with `DISCORD_TOKEN=YoURAmaZINgLyLong-ToKEN npm start` (linux), `set DISCORD_TOKEN=YoURAmaZINgLyLong-ToKEN&& npm start` (cmd), or `$env:DISCORD_TOKEN="YoURAmaZINgLyLong-ToKEN"; npm start` (Powershell)
