@@ -64,7 +64,7 @@ export default function onMessage(client, msg) {
   const channelName = isServer ? `${serverName} (#${msg.channel.name})` : 'PM';
 
   const urls = getUrlsFromMessage(msg);
-  if (!urls) {
+  if (!urls || urls.length > process.env.URL_LIMIT) {
     // Ignore messages without links (for obvious reasons).
     return Promise.resolve();
   }
