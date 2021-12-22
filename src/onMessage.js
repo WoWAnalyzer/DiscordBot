@@ -28,12 +28,22 @@ function getReportCode(wowaUrl) {
   return split[split.length - 1];
 }
 
+function filterUndefined(arr) {
+  return arr.filter((ele) => {
+    return ele !== undefined;
+  });
+}
+
 function createMessage(analysisUrls) {
   let s = ``;
   let numAdded = 1;
-  for (const url of analysisUrls) {
-    if (url === undefined) // happens when the url is not a wcl report url
-      continue;
+  let filteredUrls = filterUndefined(analysisUrls);
+
+  if (filteredUrls.length === 1) {
+    return filteredUrls[0];
+  }
+
+  for (const url of filteredUrls) {
     if (numAdded > 0) {
       s += `\n`;
     }
