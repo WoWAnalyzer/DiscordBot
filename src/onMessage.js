@@ -114,6 +114,11 @@ export default function onMessage(client, msg) {
     try {
       if (!isServer || msg.channel.permissionsFor(client.user).has('SEND_MESSAGES')) {
         const messageToSend = createMessage(values);
+
+        if(messageToSend.length === 0) {
+          return;
+        }
+        
         msg.channel.send(messageToSend);
 
         values.map((url) => {
