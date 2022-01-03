@@ -14,6 +14,8 @@ import * as metrics from "./metrics";
 
 const debug = true || process.env.NODE_ENV === "development"; // log by default for now so we can analyze where it needs improving
 
+const URL_LIMIT = 1;
+
 function getUrlsFromMessage(msg) {
   let urls = extractUrls(msg.content);
   // WebHooks may send embeds that we also want to respond to
@@ -80,7 +82,7 @@ export default function onMessage(client, msg) {
   const channelName = isServer ? `${serverName} (#${msg.channel.name})` : "PM";
 
   const urls = getUrlsFromMessage(msg);
-  if (!urls || urls.length > process.env.URL_LIMIT) {
+  if (!urls || urls.length > URL_LIMIT) {
     // Ignore messages without links (for obvious reasons).
     return Promise.resolve();
   }
