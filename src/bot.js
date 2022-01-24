@@ -1,5 +1,5 @@
 // noinspection JSFileReferences
-import Discord from 'discord.js';
+import Discord, { Intents } from 'discord.js';
 
 import onReady from './onReady';
 import onMessage from './onMessage';
@@ -17,9 +17,9 @@ if (process.env.NODE_ENV === 'development') {
   console.log('Token:', token);
 }
 
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
 client.on('ready', () => onReady(client));
-client.on('message', msg => onMessage(client, msg));
+client.on('messageCreate', msg => onMessage(client, msg));
 // Not sure if I can pass console.error directly, better safe than sorry.
 client.on('error', e => console.error(e));
 client.on('uncaughtException', e => console.error(e));
