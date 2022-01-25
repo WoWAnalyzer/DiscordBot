@@ -1,4 +1,4 @@
-FROM node:10.6-alpine
+FROM node:17-alpine
 
 # To get the latest version this requires having run `npm install`, `npm run build` prior to building the container
 
