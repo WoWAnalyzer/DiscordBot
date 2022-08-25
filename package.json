@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --watch src --exec \"yarn build && yarn prod\"",
-    "test": "node scripts/test.js",
+    "test": "jest",
     "build": "tsc",
     "prod": "node --harmony build/index.js"
   },
