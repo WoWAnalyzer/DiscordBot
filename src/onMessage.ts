@@ -11,12 +11,13 @@ import {
   checkHistoryPurge,
 } from "./memoryHistory";
 import * as metrics from "./metrics";
+import { Client, Message, PermissionsBitField } from "discord.js";
 
 const debug = true || process.env.NODE_ENV === "development"; // log by default for now so we can analyze where it needs improving
 
 const URL_LIMIT = 1;
 
-function getUrlsFromMessage(msg) {
+function getUrlsFromMessage(msg: Message): string[] {
   let urls = extractUrls(msg.content);
   // WebHooks may send embeds that we also want to respond to
   msg.embeds.forEach((embed) => {
@@ -28,19 +29,19 @@ function getUrlsFromMessage(msg) {
   return urls;
 }
 
-function getReportCode(wowaUrl) {
+function getReportCode(wowaUrl: string): string {
   // url is in format https://wowanalyzer.com/report/<reportcode>
   const split = wowaUrl.split("/");
   return split[split.length - 1];
 }
 
-function filterUndefined(arr) {
-  return arr.filter((ele) => {
+function filterUndefined<T>(arr: (T | undefined)[]): T[] {
+  return arr.filter((ele): ele is T => {
     return ele !== undefined;
   });
 }
 
-function createMessage(analysisUrls) {
+function createMessage(analysisUrls: Array<string | undefined>): string {
   let s = ``;
   let numAdded = 1;
   let filteredUrls = filterUndefined(analysisUrls);
@@ -59,7 +60,7 @@ function createMessage(analysisUrls) {
   return s;
 }
 
-function handleReject(error) {
+function handleReject(error: Error & { statusCode: number }): void {
   if ([400].includes(error.statusCode)) {
     // Known status codes, so no need to log.
     // 400 = report does not exist or is private.
@@ -70,8 +71,9 @@ function handleReject(error) {
   console.error(error);
 }
 
-export default function onMessage(client, msg) {
-  if (msg.author.id === client.user.id) {
+export default function onMessage(client: Client, msg: Message) {
+  console.log(msg.content);
+  if (msg.author.id === client.user?.id) {
     // don't care about messages from the WowA bot
     return;
   }
@@ -79,7 +81,10 @@ export default function onMessage(client, msg) {
   const isServer = msg.guild !== null;
   const isPrivateMessage = msg.channel === null;
   const serverName = isServer ? msg.guild.name : "PM";
-  const channelName = isServer ? `${serverName} (#${msg.channel.name})` : "PM";
+  const rawChannelName = msg.channel.isDMBased() ? "PM" : msg.channel.name;
+  const channelName = msg.channel.isDMBased()
+    ? "PM"
+    : `${serverName} (#${msg.channel.name})`;
 
   const urls = getUrlsFromMessage(msg);
   if (!urls || urls.length > URL_LIMIT) {
@@ -106,7 +111,7 @@ export default function onMessage(client, msg) {
       }
 
       const reportCode = path[1];
-      const serverId = msg.guild.id;
+      const serverId = msg.guild?.id ?? msg.author.id;
 
       if (isServer && !isPrivateMessage) {
         if (isOnCooldown(serverId, reportCode)) {
@@ -117,7 +122,7 @@ export default function onMessage(client, msg) {
               url.href,
               "in",
               msg.guild.name,
-              `(#${msg.channel.name})`,
+              `(${rawChannelName})`,
               ": already seen reportCode recently."
             );
           return;
@@ -158,7 +163,11 @@ export default function onMessage(client, msg) {
     try {
       if (
         !isServer ||
-        msg.channel.permissionsFor(client.user).has("SEND_MESSAGES")
+        (client.user &&
+          !msg.channel.isDMBased() &&
+          msg.channel
+            .permissionsFor(client.user)
+            ?.has(PermissionsBitField.Flags.SendMessages))
       ) {
         const messageToSend = createMessage(values);
 
@@ -171,7 +180,7 @@ export default function onMessage(client, msg) {
         values.map((url) => {
           if (url != undefined) {
             let reportCode = getReportCode(url);
-            putOnCooldown(msg.guild.id, reportCode);
+            putOnCooldown(msg.guild?.id ?? msg.author.id, reportCode);
           }
         });
 
@@ -183,7 +192,7 @@ export default function onMessage(client, msg) {
         console.warn("No permission to write to this channel.", channelName);
       }
     } catch (error) {
-      handleReject(error);
+      handleReject(error as Error & { statusCode: number });
     }
   }, handleReject);
 }

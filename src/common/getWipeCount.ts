@@ -1,4 +1,6 @@
-export default function getWipeCount(report, fight) {
+import { Fight, Report } from "../wcl-types";
+
+export default function getWipeCount(report: Report, fight: Fight) {
   let count = 1;
   report.fights.forEach((item) => {
     if (item.boss === fight.boss) {
