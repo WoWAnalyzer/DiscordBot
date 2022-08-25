@@ -4,8 +4,8 @@ import type { Report } from "./wcl-types";
 export default function makeAnalyzerUrl(
   report: Report,
   reportCode: string,
-  fightId: string | null = null,
-  playerId: string | null = null
+  fightId: number | string | null = null,
+  playerId: number | string | null = null
 ) {
   const url = [`https://wowanalyzer.com/report/${reportCode}`];
 
@@ -22,7 +22,7 @@ export default function makeAnalyzerUrl(
         const player = report.friendlies.find(
           (player) => player.id === Number(playerId)
         );
-        url.push(player ? `${playerId}-${player.name}` : playerId);
+        url.push(player ? `${playerId}-${player.name}` : String(playerId));
       }
     }
   }
