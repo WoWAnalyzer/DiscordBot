@@ -1,4 +1,8 @@
-import { Client } from "discord.js";
+import {
+  Client,
+  SlashCommandBuilder,
+  SlashCommandStringOption,
+} from "discord.js";
 import * as metrics from "./metrics";
 
 export default function onReady(client: Client) {

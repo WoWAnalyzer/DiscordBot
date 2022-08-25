@@ -11,7 +11,13 @@ import {
   checkHistoryPurge,
 } from "./memoryHistory";
 import * as metrics from "./metrics";
-import { Client, Message, PermissionsBitField } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  Client,
+  Interaction,
+  Message,
+  PermissionsBitField,
+} from "discord.js";
 
 const debug = true || process.env.NODE_ENV === "development"; // log by default for now so we can analyze where it needs improving
 
@@ -41,13 +47,20 @@ function filterUndefined<T>(arr: (T | undefined)[]): T[] {
   });
 }
 
-function createMessage(analysisUrls: Array<string | undefined>): string {
+// const DEPRECATION_MESSAGE =
+//   "\n\nDue to changes by Discord, this bot will no longer auto respond to messages after <t:1661878799:f>. To get WoWAnalyzer links after that, use the `/analyze` command.";
+const DEPRECATION_MESSAGE = "";
+
+function createMessage(
+  analysisUrls: Array<string | undefined>,
+  fromInteraction?: boolean
+): string {
   let s = ``;
   let numAdded = 1;
   let filteredUrls = filterUndefined(analysisUrls);
 
   if (filteredUrls.length === 1) {
-    return filteredUrls[0];
+    return filteredUrls[0] + (!fromInteraction ? DEPRECATION_MESSAGE : "");
   }
 
   for (const url of filteredUrls) {
@@ -57,7 +70,7 @@ function createMessage(analysisUrls: Array<string | undefined>): string {
     s += `${numAdded}: ${url}`;
     numAdded += 1;
   }
-  return s;
+  return s + (!fromInteraction ? DEPRECATION_MESSAGE : "");
 }
 
 function handleReject(error: Error & { statusCode: number }): void {
@@ -71,8 +84,53 @@ function handleReject(error: Error & { statusCode: number }): void {
   console.error(error);
 }
 
+type ReportUrlData = {
+  url: URL;
+  reportCode: string;
+  hash: ReturnType<typeof parseHash>;
+};
+
+function parseReportUrl(urlString: string): ReportUrlData | undefined {
+  let url;
+  try {
+    url = new URL(urlString);
+  } catch (error) {
+    return;
+  }
+  if (!url.host.match(/warcraftlogs\.com$/)) {
+    // The URL must be from the WCL domain.
+    return;
+  }
+  const path = url.pathname.match(/^\/reports\/([a-zA-Z0-9]{16})\/?$/);
+  if (!path) {
+    // The URL must be to a single report.
+    return;
+  }
+
+  const reportCode = path[1];
+
+  return {
+    url,
+    reportCode,
+    hash: parseHash(url.hash),
+  };
+}
+
+async function convertUrl({
+  reportCode,
+  hash: { fight: fightId, source: playerId },
+}: ReportUrlData): Promise<string | undefined> {
+  try {
+    const fightsJson = await getFights(reportCode);
+    const report = JSON.parse(fightsJson);
+
+    return makeAnalyzerUrl(report, reportCode, fightId, playerId);
+  } catch {
+    return undefined;
+  }
+}
+
 export default function onMessage(client: Client, msg: Message) {
-  console.log(msg.content);
   if (msg.author.id === client.user?.id) {
     // don't care about messages from the WowA bot
     return;
@@ -94,23 +152,17 @@ export default function onMessage(client: Client, msg: Message) {
 
   return Promise.all(
     urls.map(async (urlString) => {
-      let url;
-      try {
-        url = new URL(urlString);
-      } catch (error) {
-        return;
-      }
-      if (!url.host.match(/warcraftlogs\.com$/)) {
-        // The URL must be from the WCL domain.
-        return;
-      }
-      const path = url.pathname.match(/^\/reports\/([a-zA-Z0-9]{16})\/?$/);
-      if (!path) {
-        // The URL must be to a single report.
+      const data = parseReportUrl(urlString);
+
+      if (!data) {
         return;
       }
 
-      const reportCode = path[1];
+      const {
+        url,
+        reportCode,
+        hash: { fight: fightId, source: playerId, ...others },
+      } = data;
       const serverId = msg.guild?.id ?? msg.author.id;
 
       if (isServer && !isPrivateMessage) {
@@ -129,10 +181,6 @@ export default function onMessage(client: Client, msg: Message) {
         }
         checkHistoryPurge();
       }
-      const { fight: fightId, source: playerId, ...others } = parseHash(
-        url.hash
-      );
-
       if (
         isServer &&
         (others.start ||
@@ -154,10 +202,7 @@ export default function onMessage(client: Client, msg: Message) {
         return;
       }
 
-      const fightsJson = await getFights(reportCode);
-      const report = JSON.parse(fightsJson);
-
-      return makeAnalyzerUrl(report, reportCode, fightId, playerId);
+      return convertUrl(data);
     })
   ).then((values) => {
     try {
@@ -195,4 +240,32 @@ export default function onMessage(client: Client, msg: Message) {
       handleReject(error as Error & { statusCode: number });
     }
   }, handleReject);
+}
+
+export async function handleInteraction(
+  interaction: ChatInputCommandInteraction
+): Promise<void> {
+  if (interaction.commandName === "analyze") {
+    const data = parseReportUrl(interaction.options.getString("log")!);
+
+    if (!data) {
+      await interaction.reply({
+        content: "That isn't a valid Warcraft Logs report.",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const result = await convertUrl(data);
+    if (!result) {
+      await interaction.reply({
+        content:
+          "Unable to load report. That link may be invalid, or Warcraft Logs may be experiencing issues.",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    await interaction.reply(createMessage([result], true));
+  }
 }

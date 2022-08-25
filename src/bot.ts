@@ -1,7 +1,7 @@
 import Discord, { GatewayIntentBits } from "discord.js";
 
 import onReady from "./onReady";
-import onMessage from "./onMessage";
+import onMessage, { handleInteraction } from "./onMessage";
 import * as metrics from "./metrics";
 
 import "./init";
@@ -47,6 +47,9 @@ async function buildClient(
   client.on("guildDelete", async (guild) => {
     console.log("Left server", guild.name, client.guilds.cache.size);
     metrics.guildGauge.set(client.guilds.cache.size);
+  });
+  client.on("interactionCreate", (interaction) => {
+    interaction.isChatInputCommand() && handleInteraction(interaction);
   });
   await client.login(token);
   return client;
