@@ -55,9 +55,4 @@ async function buildClient(
   return client;
 }
 
-// this tries to register the full message content mode, and if that fails it registers for interactions only
-buildClient([
-  GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMessages,
-  GatewayIntentBits.MessageContent,
-]);
+buildClient([GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]);
