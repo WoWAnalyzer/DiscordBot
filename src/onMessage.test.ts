@@ -1,22 +1,24 @@
 import onMessage from "./onMessage";
 import { checkHistoryPurge, putOnCooldown } from "./memoryHistory";
+import { Client, Message } from "discord.js";
 
 jest.mock("./getFights");
 jest.mock("./memoryHistory");
 
 const client = {
-  user: { id: 9999 },
-};
+  user: { id: "9999" },
+} as Client;
 
 describe("onMessage", () => {
-  let createMessage;
+  let createMessage: (props: any) => Message;
   beforeEach(() => {
-    createMessage = (props) => ({
+    createMessage = (props: any): Message => ({
       author: {
         bot: false,
       },
       channel: {
         send: jest.fn(),
+        isDMBased: jest.fn(() => false),
         permissionsFor: jest.fn(() => ({
           has: jest.fn(() => true),
         })),
@@ -182,7 +184,7 @@ describe("onMessage", () => {
     expect(message.channel.send).toHaveBeenCalled();
     expect(putOnCooldown).toHaveBeenCalledWith(12345, "PROPERREPORTCODE");
   });
-  describe("memoryHistory", async () => {
+  describe("memoryHistory", () => {
     const memoryHistory = require("./memoryHistory");
     beforeEach(() => {
       memoryHistory.isOnCooldown = jest.fn(() => true);
@@ -240,7 +242,7 @@ describe("onMessage", () => {
         },
       ],
       author: {
-        id: client.user.id,
+        id: client.user!.id,
       },
     });
 
