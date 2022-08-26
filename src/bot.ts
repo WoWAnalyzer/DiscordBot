@@ -60,6 +60,4 @@ buildClient([
   GatewayIntentBits.Guilds,
   GatewayIntentBits.GuildMessages,
   GatewayIntentBits.MessageContent,
-]).catch(() => {
-  return buildClient([GatewayIntentBits.Guilds]);
-});
+]);
