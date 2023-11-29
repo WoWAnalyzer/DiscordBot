@@ -1,5 +1,6 @@
 import { REST } from "@discordjs/rest";
-import { Routes, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
+import { Routes } from 'discord-api-types/v10';
 
 import "../init";
 

@@ -1,5 +1,5 @@
+import * as Sentry from "@sentry/node";
 import { URL } from "url";
-import Raven from "raven";
 
 import parseHash from "./common/parseHash";
 import extractUrls from "./extractUrls";
@@ -14,7 +14,6 @@ import * as metrics from "./metrics";
 import {
   ChatInputCommandInteraction,
   Client,
-  Interaction,
   Message,
   PermissionsBitField,
 } from "discord.js";
@@ -80,7 +79,7 @@ function handleReject(error: Error & { statusCode: number }): void {
     debug && console.log("400 response: report does not exist or is private.");
     return;
   }
-  Raven.captureException(error);
+  Sentry.captureException(error);
   console.error(error);
 }
 
