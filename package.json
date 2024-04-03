@@ -10,14 +10,12 @@
   },
   "dependencies": {
     "@discordjs/rest": "^2.2.0",
-    "@sentry/node": "^7.83.0",
+    "@sentry/node": "^7.91.0",
     "discord-api-types": "^0.37.65",
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
-    "prom-client": "^15.0.0",
     "request": "^2.87.0",
-    "request-promise-native": "^1.0.4",
-    "uws": "200.0.0"
+    "request-promise-native": "^1.0.4"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",

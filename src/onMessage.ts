@@ -10,7 +10,6 @@ import {
   putOnCooldown,
   checkHistoryPurge,
 } from "./memoryHistory";
-import * as metrics from "./metrics";
 import {
   ChatInputCommandInteraction,
   Client,
@@ -228,10 +227,6 @@ export default function onMessage(client: Client, msg: Message) {
           }
         });
 
-        // Metrics
-        metrics.messagesSentCounter.labels(serverName).inc();
-        const elapsedMs = process.hrtime(start)[1] / 1000000;
-        metrics.reportResponseLatencyHistogram.observe(elapsedMs);
       } else {
         console.warn("No permission to write to this channel.", channelName);
       }
