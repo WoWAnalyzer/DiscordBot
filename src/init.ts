@@ -15,4 +15,6 @@ if (process.env.NODE_ENV === 'production') {
   Raven.config('https://669adafa75124f91bff5754d9c34b13a@o105799.ingest.sentry.io/253783', {
     captureUnhandledRejections: true
   }).install();
+} else {
+  console.log('Sentry is DISABLED');
 }
